@@ -42,8 +42,7 @@ public class ArabamApp {
 
     @Test
     public void arabamTest() throws InterruptedException {
-       // driver.activateApp("com.dogan.arabam");
-
+        // driver.activateApp("com.dogan.arabam");
         // uygulamanin basarili bir sekilde yuklendigi dogrulanir
         Assert.assertTrue(driver.isAppInstalled("com.dogan.arabam"));
         // uygulaminin basarili bir sekilde acildigi dogrulanir
@@ -51,24 +50,28 @@ public class ArabamApp {
         // alt menuden ilan ara butonuna tiklanir
         driver.findElementByXPath("//*[@text='İlan Ara']").click();
         // kategori olarak otomobil secilir
-        //driver.findElementByXPath("//*[@text='Otomobil']").click();//tıklama yapmak için klasik yöntem.
-        Thread.sleep(1500);
-        TouchAction action=new TouchAction<>(driver);
-        action
-                .press(PointOption.point(994,500))//
-                .release()
-                .perform();
-        Thread.sleep(1500);
+        //  driver.findElementByXPath("//*[@text='Otomobil']").click(); // tiklama yapmak icin kullanilan klasik yontem
 
-        // arac olarak Volkswagen secilir
-        for (int i=0; i<6; i++) {
-            action.press(PointOption.point(482, 1516))
-                    .waitAction(WaitOptions.waitOptions(Duration.ofMillis(750)))
-                    .moveTo(PointOption.point(482, 320))
-                    .release()
-                    .perform();
+        Thread.sleep(1000);
+        TouchAction action=new TouchAction<>(driver); // Hangi cihaz uzerinde calisacaksak o cihaza ait driver
+        action
+             .press(PointOption.point(994,500)) // Ekranda tiklama yapilacak en ve boy bilgilerinin girildigi kisim. En ve boy bilgileri inspectorden
+             .release() // Tiklama islemi yaptiktan sonra tiklamanin gerceklesmesi icin ekrandan parmagimizi kaldirma islemi
+             .perform(); // verilen action gorevlerinin yerine getirmesi icin action methodlarina verilen YAP(yerine getir) emri.
+        Thread.sleep(2000);
+
+        for (int i=0; i<5; i++){
+            action
+              .press(PointOption.point(482,1516)) // Kaydirma yapmak icin ekranda belirlenecek ilk nokta.
+              .waitAction(WaitOptions.waitOptions(Duration.ofMillis(500))) // Baslangic ile bitis arasindaki hizi belirleyen sure
+              // Eger sure kisalarisa daha fazla yol kat edilir. Yani ekranda assagiya dogru daha hizli bir haraket gerceklesir
+              // Eger sure uzarsa daha az yol kat edilir. Yani ekranda assagiya dogru daha yavas bir haraket gerceklesir.
+              .moveTo(PointOption.point(482,320)) // Belirlenen ilk noktadan son noktaya gecisi saglayan ve kaydirma isleminin son evresi
+              .release() // Ekrandan parmak kaldirilir
+              .perform(); // Bu islemler perform sayesinde yerine getirilir.
+            Thread.sleep(1000);
         }
-        Thread.sleep(1500);
+        // arac olarak Volkswagen secilir
         driver.findElementByXPath("//*[@text='Volkswagen']").click();
         // arac markasi olarak passat secilir
         driver.findElementByXPath("//*[@text='Passat']").click();
@@ -76,22 +79,28 @@ public class ArabamApp {
         driver.findElementByXPath("//*[@text='1.4 TSi BlueMotion']").click();
         Thread.sleep(1000);
         // Paket secimi yapilir
+        // 500 700
         action
                 .press(PointOption.point(500,700))
                 .release()
                 .perform();
         Thread.sleep(1000);
-
         // Ucuzdan pahaliya siralama yaparak filtreleme yapilir
         driver.findElementById("com.dogan.arabam:id/textViewSorting").click();
-        Thread.sleep(1500);
+        Thread.sleep(1000);
         driver.findElementByXPath("//*[@text='Fiyat - Ucuzdan Pahalıya']").click();
+
         // Gelen en ucuz aracin 500.000 tl den buyuk oldugu dogrulanir
+
         AndroidElement enUcuzAracFiyatiElementi=driver.findElementByXPath("(//*[@resource-id='com.dogan.arabam:id/tvPrice'])[1]");
         String aracinSonFiyati=enUcuzAracFiyatiElementi.getText();
+        System.out.println(aracinSonFiyati); // 670.000 TL
+        aracinSonFiyati=aracinSonFiyati.replaceAll("\\D","");
         System.out.println(aracinSonFiyati);
-        Assert.assertTrue(Integer.parseInt(aracinSonFiyati)>500000);
-    }
 
+        Assert.assertTrue(Integer.parseInt(aracinSonFiyati)>500000);
+
+
+    }
 
 }
